@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Jesus Ortega / 002 
  *
  *   This java file contains the problem solutions of isSubSet, findKthLargest,
  *   and sort2Arrays methods. You should utilize the Java Collection Framework for
@@ -31,10 +31,19 @@ class ProblemSolutions {
      */
 
     public boolean isSubset(int list1[], int list2[]) {
+        if (list2 == null || list2.length == 0) return true; // empty set is subset of any set
+        if (list1 == null || list1.length == 0) return false; // non-empty set cannot be subset of empty set
 
-        // ADD YOU CODE HERE -- DON'T FORGET TO ADD YOR NAME AT TOP OF FILE
+        Set<Integer> set = new HashSet<>();
+        for (int v : list1) { // O(n) time complexity
+            set.add(v);
+        }
 
-        return false;
+        for (int v : list2) {
+            if (!set.contains(v)) return false; // O(1) average time complexity for contains
+        } 
+
+        return true;
     }
 
 
@@ -52,10 +61,20 @@ class ProblemSolutions {
      */
 
     public int findKthLargest(int[] array, int k) {
-
-        // ADD YOUR CODE HERE
-
-        return 0;
+        /*if (array == null || k < 1 || k > array.length) {
+            throw new IllegalArgumentException("Invalid array or k");
+        }*/
+        // Min-heap of size k: root is the k-th largest element after processing all elements
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>(k);
+        for (int num : array) {
+            if (minHeap.size() < k) {
+                minHeap.offer(num);
+            } else if (num > minHeap.peek()) {
+                minHeap.poll();
+                minHeap.offer(num);
+            }
+        }
+        return minHeap.peek();
     }
 
 
@@ -73,10 +92,18 @@ class ProblemSolutions {
      */
 
     public int[] sort2Arrays(int[] array1, int[] array2) {
+        if (array1 == null) array1 = new int[0]; // handle null arrays
+        if (array2 == null) array2 = new int[0]; // handle null arrays
 
-        // ADD YOU CODE HERE
+        List<Integer> list = new ArrayList<>(array1.length + array2.length);
+        for (int v : array1) list.add(v);
+        for (int v : array2) list.add(v);
 
-        return null;
+        Collections.sort(list);
+
+        int[] result = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) result[i] = list.get(i);
+        return result;
     }
 
 }

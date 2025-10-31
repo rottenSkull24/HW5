@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Jesus Ortega / 002
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -246,10 +246,45 @@ public class CuckooHash<K, V> {
 
  	public void put(K key, V value) {
 
-		// ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE.
-		// Also make sure you read this method's prologue above, it should help
-		// you. Especially the two HINTS in the prologue.
+		// Insert using cuckoo hashing
+		int count = 0;
+		K curKey = key;
+		V curVal = value;
+		int pos = hash1(curKey);
 
+		while (count < CAPACITY) {
+			if (table[pos] == null) { // If empty, place and return
+				table[pos] = new Bucket<K, V>(curKey, curVal);
+				return;
+			} 
+
+			K ek = table[pos].getBucKey(); // If identical <key,value> already present, do nothing
+			V ev = table[pos].getValue();
+			boolean sameKey = (ek == null ? curKey == null : ek.equals(curKey));
+			boolean sameVal = (ev == null ? curVal == null : ev.equals(curVal));
+			if (sameKey && sameVal) {
+				return;
+			}
+
+			// Evict occupant and place current pair
+			table[pos] = new Bucket<K, V>(curKey, curVal);
+
+			// Prep to insert the evicted pair at its alternate position
+			curKey = ek;
+			curVal = ev;
+
+			// alternate position for evicted key
+			if (pos == hash1(curKey))
+				pos = hash2(curKey);
+			else
+				pos = hash1(curKey);
+
+			count++;
+		}
+
+		// Assume a cycle; grow and rehash, then insert the remaining pair
+		rehash();
+		put(curKey, curVal);
 		return;
 	}
 
